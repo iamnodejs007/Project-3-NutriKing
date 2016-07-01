@@ -87,7 +87,7 @@
           <th width="15%">Carbohydrates</th>
         </tr>
       </thead>
-      <tbody id="snack-tbody">
+      <tbody id="snacks-tbody">
       </tbody>
     </table>
   </div>
@@ -119,7 +119,7 @@ var resultsTableBody = $('#result-table #result-tbody')
 var breakfastTableBody = $('#breakfast-table #breakfast-tbody')
 var lunchTableBody = $('#lunch-table #lunch-tbody')
 var dinnerTableBody = $('#dinner-table #dinner-tbody')
-var snacksTableBody = $('#snack-table #snack-tbody')
+var snacksTableBody = $('#snack-table #snacks-tbody')
 var submit = $('#add-food')
 var logTableBody = $('#log-table #log-tbody')
 var resultTableDiv = $('.result-table-div')
@@ -233,7 +233,6 @@ $.ajax({
   url: '/user/<%= user._id %>/food',
   method: 'GET',
 })
-
 .done(function(data){
   var foodArr = data.food
   for (var i = 0; i < data.food.length; i++) {
@@ -243,7 +242,7 @@ $.ajax({
       lunchTable.show()
     } else if (foodArr[i].meal == 'dinner') {
       dinnerTable.show()
-    } else if (foodArr[i].meal == 'snack') {
+    } else if (foodArr[i].meal == 'snacks') {
       snacksTable.show()
     }
   }
