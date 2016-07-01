@@ -34,7 +34,7 @@ userSchema = new Schema({
 userSchema.plugin(findOrCreate)
 foodSchema.pre('save', function(next){
   if (!this.created_at) {
-    var current_date = new Date("June 29, 2016 11:13:00")
+    var current_date = new Date("June 28, 2016 11:13:00")
     this.created_at = current_date
   }
   next()
