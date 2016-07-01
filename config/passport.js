@@ -7,7 +7,7 @@ User = require('../models/User.js')
 passport.use(new GoogleStrategy({
   clientID: "1088452267193-8q2n0ncihpebaon4hidr7v5cl9ctpvsm.apps.googleusercontent.com",
   clientSecret: "QEf5N-MgbZc9vCjdkMfB1Kh8",
-  callbackURL: "https://mighty-inlet-45127.herokuapp.com/auth/google/callback"
+  callbackURL: "https://honest-eds-21969.herokuapp.com/auth/google/callback"
 },
 function(token, tokenSecret, profile, done){
   console.log("Inside of GoogleStrategy");
