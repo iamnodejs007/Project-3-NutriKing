@@ -8,7 +8,6 @@ date = new Date
 userRouter.route('/login')
 .get(function(req, res){
   res.render('login', {flash: req.flash('loginMessage')})
-  //simply render the login view
 })
 .post(passport.authenticate('local-login',{
   successRedirect: '/main',
@@ -24,18 +23,21 @@ userRouter.route('/signup')
   failureRedirect: '/signup'
 }))
 
+// Load users profile page
 userRouter.get('/profile', isLoggedIn, function(req, res){
   console.log("Inside of profile");
   console.log(req.query);
   res.render('profile', {user: req.user, strategy: req.query.strategy})
 })
 
+// find a single user
 userRouter.get('/user/:id', function(req, res){
   User.findById(req.params.id, function(err, user){
     res.render('update', {user: user})
   })
 })
 
+// Edit a user's profile
 userRouter.patch('/user/:id', function (req, res){
   console.log(req.body);
   User.findByIdAndUpdate(req.params.id, req.body, {new: true}, function(err, user){
@@ -44,6 +46,7 @@ userRouter.patch('/user/:id', function (req, res){
   })
 })
 
+// Delete a User
 userRouter.get('/user/:id/delete', function(req, res){
   req.logout()
   User.findByIdAndRemove(req.params.id, function(err, item){
@@ -52,15 +55,18 @@ userRouter.get('/user/:id/delete', function(req, res){
   })
 })
 
+// Logout
 userRouter.get('/logout', function(req, res) {
   req.logout()
   res.redirect('/')
 })
 
+// Route for the main page of the app
 userRouter.get('/main', isLoggedIn, function(req, res){
   res.render('main_page.ejs', {user: req.user, date: date})
 })
 
+// Post food to a user's account
 userRouter.route('/user/:id/food')
 .post(function(req, res){
   User.findById(req.params.id, function(err, user){
@@ -84,6 +90,7 @@ userRouter.route('/user/:id/food')
   })
 })
 
+// Delete food from a user
 userRouter.route('/user/:id/food/:foodId')
 .delete(function(req, res){
   User.findById(req.params.id, function(err, user){
@@ -99,14 +106,15 @@ userRouter.route('/user/:id/food/:foodId')
   })
 })
 
+// Google authorization
 userRouter.get('/auth/google', passport.authenticate('google', {scope: ['profile', 'email']}))
-
 userRouter.get('/auth/google/callback',
 passport.authenticate('google', {
   successRedirect: '/main?strategy=google',
   failureRedirect: '/fail'
 }));
 
+// Function to check if a user is logged in, and if false, redirects to the main page
 function isLoggedIn(req, res, next) {
   if(req.isAuthenticated()) return next()
   res.redirect('/')

@@ -14,7 +14,7 @@ foodSchema = new Schema ({
   fat: Number,
   carbohydrates: Number,
   created_at: Date
-})
+}),
 
 userSchema = new Schema({
   local: {
@@ -42,7 +42,7 @@ foodSchema.pre('save', function(next){
 
 userSchema.methods.generateHash = function(password){
   return bcrypt.hashSync(password, bcrypt.genSaltSync(8))
-  //hashSync prevent other shits running before this happens
+  //hashSync prevent other things from running before this happens
 }
 
 userSchema.methods.validPassword = function(password){

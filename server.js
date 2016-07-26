@@ -23,16 +23,16 @@ nutritionix = require('nutritionix')({
   appKey: process.env.APPKEY
 }, false),
 PORT = process.env.PORT || 3000, // heroku doesn't like port 3000 so this ensures heroku will pick its own port or use 3000
-userRoutes = require('./routes/users.js')
+userRoutes = require('./routes/users.js'),
+apiRoutes = require('./routes/api.js')
 
-// connect to mongodb database
+// connect to mLabs database
 mongoose.connect(process.env.DB_URL, function(err){
   if (err) return console.log(err);
   console.log("Connected to MongoDB (project-3)");
 })
 
 // middleware
-// app.use(googleButton)
 app.use(bodyParser.json());
 app.use(express.static('./public'))
 app.use(logger('dev'))
@@ -54,7 +54,7 @@ app.use(flash())
 
 // this is the session and passport middleware
 app.use(session({
-  cookie: {_expires: 60000000}, // 16.6 hours in milliseconds
+  cookie: {maxTime: 60000000}, // 16.6 hours in milliseconds
   secret: "Wazzzuuuup", // this adds an encrypter version of this secret so that a user cant just add a cookie in the browser and be logged in...very cruial
   resave: true, // if you are continually using the site, you will stay logged in as long as you want
   saveUninitialized: false // means, "do you want to create a cookie even if the login fails?".. answer is NO
@@ -67,63 +67,7 @@ app.use(function(req, res, next) {
   next()
 })
 
-app.post('/', function(req, res) {
-  var body = {
-    appId:"027e373f",
-    appKey:"4d32fcc05f9358d893602b98daa6a6f7",
-    query: req.body.query,
-    results: 5,
-    fields:["item_name","brand_name","nf_serving_size_qty", "nf_serving_size_unit", "nf_calories", "nf_protein", "nf_total_fat", "nf_total_carbohydrate", "images_front_full_url"],
-    sort:{
-      field:"_score",
-      order:"desc"
-    },
-    filters:{
-      item_type:2
-    }
-  }
-  request({
-    method: 'POST',
-    json: true,
-    url: "https://api.nutritionix.com/v1_1/search/",
-    body: body
-  }, function(err, response, body){
-    if (err) return console.log(err);
-    res.json(body)
-  })
-})
-
-// for reference:
-app.post('/autocomplete', function(req, res) {
-  var body = {
-    appId:"027e373f",
-    appKey:"4d32fcc05f9358d893602b98daa6a6f7",
-    query: req.body.query,
-    results: 5,
-    fields:["item_name","brand_name","nf_serving_size_qty", "nf_serving_size_unit", "nf_calories", "nf_protein", "nf_total_fat", "nf_total_carbohydrate", "images_front_full_url"],
-    sort:{
-      field:"_score",
-      order:"desc"
-    },
-    filters:{
-      item_type:2
-    }
-  }
-  request({
-    method: 'POST',
-    json: true,
-    url: "https://api.nutritionix.com/v1_1/search/",
-    body: body
-  }, function(err, response, body){
-    if (err) return console.log(err);
-    var suggestions = []
-    body.hits.forEach(function(hit){
-      suggestions.push({item_name: hit.fields.item_name, brand: hit.fields.brand_name})
-    })
-    res.json(suggestions)
-  })
-})
-
+// set the landing page as the default page
 app.get('/', function(req, res){
   res.render('landing.ejs', {flash: req.flash('loginMessage')})
 })
@@ -134,12 +78,14 @@ app.get('/user', function(req,res){
 })
 
 app.use('/', userRoutes)
+app.use('/', apiRoutes)
 
-// Connec to server
+// Connect to server
 app.listen(PORT, function(){
   console.log('Server is running on port: ', PORT);
 })
 
+// required for logging in with your Google account information
 app.get('/auth/google',
 passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login'] }));
 
